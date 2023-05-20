@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New project form</title>
+    <style>
+        body {
+            padding: 20px 100px 100px 100px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    
+    <h1>Projekt: <%= project.naziv_projekta %></h1>
+
+    <h3>Korisnici koji su na projektu</h3>
+
+    <form method="POST" action="/projects/newmember/<%= projectId %>">
+        <% users.forEach((user, index) => { %>
+          <input type="checkbox"
+                 name="usersArray[<%= index %>]"
+                 value="<%= user._id %>"
+                 id="option<%= index %>"
+                 onclick="makePostRequest(event)"
+                 <% if (project.members.includes(user._id)) { %>checked<% } %>
+          >
+          <label for="option<%= index %>"><%= user.name %></label><br>
+        <% }); %>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        function makePostRequest(event) {
+            var userId = event.target.value;
+            var projectId = "<%= project._id %>";
+            
+            if (!event.target.checked) {
+                fetch(`/projects/memberunchecked/${projectId}/members/${userId}`, {
+                    method: "DELETE"
+                })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error(error));
+            }
+        }
+    </script>
+</body>
+</html>
